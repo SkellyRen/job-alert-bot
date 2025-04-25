@@ -1,30 +1,30 @@
 [
-    {
-      "name": "Christian Tech Jobs",
-      "url": "https://www.christiantechjobs.io/jobs",
-      "base_url": "https://www.christiantechjobs.io",
-      "selector": "a.rbox-opening-li-title",
-      "keywords": ["developer", "crm", "data", "migration", "rock rms", "remote", "software engineer"]
-    },
-    {
-        "name": "ChurchStaffing (Tech)",
-        "url": "https://www.churchstaffing.com/jobs/category/it-technology/",
-        "base_url": "https://www.churchstaffing.com",
-        "selector": ".job-title a",
-        "keywords": ["developer", "technology", "it", "support"]
-    },
-    {
-        "name": "Rock RMS Community Jobs",
-        "url": "https://community.rockrms.com/jobs",
-        "base_url": "https://community.rockrms.com",
-        "selector": "stretched-link",
-        "keywords": ["rock", "developer", "admin", "rms"]
-    },
-    {
-        "name": "Lakepointe Church",
-        "url": "https://lakepointe.church/careers/",
-        "base_url": "https://lakepointe.church",
-        "selector": "rbox-opening-li-title",
-        "keywords": ["it", "developer", "rock rms", "systems","software engineer"]
-    }
+  {
+    "name": "Christian Tech Jobs",
+    "url": "https://www.christiantechjobs.io/jobs",
+    "base_url": "https://www.christiantechjobs.io",
+    "selector": "a.rbox-opening-li-title",
+    "keywords": ["developer", "crm", "data", "migration", "rock rms", "remote", "software engineer"]
+  },
+  {
+      "name": "ChurchStaffing (Tech)",
+      "url": "https://www.churchstaffing.com/jobs/category/it-technology/",
+      "base_url": "https://www.churchstaffing.com",
+      "selector": "a[href^='/job/']",
+      "keywords": ["developer", "technology", "it", "support", "software engineer"]
+  },
+  {
+    "name": "Rock RMS Community Jobs",
+    "url": "https://community.rockrms.com/jobs",
+    "base_url": "https://community.rockrms.com",
+    "selector": "a.stretched-link",  //
+    "keywords": ["rock", "developer", "admin", "rms"]
+  },
+  {
+    "name": "Lakepointe Church",
+    "url": "https://lakepointe.church/careers/",
+    "base_url": "",
+    "selector": "a.rbox-opening-li-title",  // fixed typo
+    "keywords": ["it", "developer", "rock rms", "systems", "software engineer"]
+  }
 ]
