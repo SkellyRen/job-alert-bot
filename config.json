@@ -4,7 +4,7 @@
     "url": "https://www.christiantechjobs.io",
     "base_url": "https://www.christiantechjobs.io",
     "selector": "span.text-slate-800",
-    "keywords": ["developer", "crm", "data", "migration", "rock rms", "remote", "software engineer","software"]
+    "keywords": ["developer", "crm", "data", "migration", "rock rms", "remote", "software engineer","software","solutions"]
   },
   {
     "name": "ChurchStaffing (Tech)",
@@ -18,7 +18,7 @@
     "url": "https://community.rockrms.com/jobs",
     "base_url": "https://community.rockrms.com",
     "selector": "a.stretched-link",
-    "keywords": ["rock", "developer", "admin", "rms"]
+     "keywords": ["developer", "crm", "data", "migration", "rock rms", "software engineer","software","it","systems","solutions"]
   },
   {
     "name": "Life.Church Careers",
