@@ -23,7 +23,7 @@
   {
     "name": "Lakepointe Church",
     "url": "https://lakepointe.church/careers/",
-    "base_url": "https://lakepointe.church",
+    "base_url": "https://lakepointe.church/careers/",
     "selector": "a[href*='#op-']",
     "keywords": ["it", "developer", "rock rms", "systems", "software engineer"]
   }
