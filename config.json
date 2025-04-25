@@ -1,7 +1,7 @@
 [
   {
     "name": "Christian Tech Jobs",
-    "url": "https://www.christiantechjobs.io/jobs",
+    "url": "https://www.christiantechjobs.io",
     "base_url": "https://www.christiantechjobs.io",
     "selector": "span.text-slate-800",
     "keywords": ["developer", "crm", "data", "migration", "rock rms", "remote", "software engineer","software"]
