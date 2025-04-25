@@ -4,12 +4,13 @@ from bs4 import BeautifulSoup
 import hashlib
 import os
 import time
+import re
 
 # Load config
 with open("config.json", "r") as f:
     config = json.load(f)
 
-# Your actual Discord webhook
+# Discord webhook from environment
 DISCORD_WEBHOOK = os.getenv("DISCORD_WEBHOOK")
 
 SEEN_FILE = "seen_jobs.txt"
@@ -47,12 +48,31 @@ for site in config:
     try:
         res = requests.get(site["url"], headers=HEADERS, timeout=10)
         res.raise_for_status()
+
+        # === Paycom Special Case ===
+        if "paycomonline.net" in site["url"]:
+            match = re.search(r"var jobs = (\[.*?\]);", res.text, re.DOTALL)
+            if match:
+                jobs_data = json.loads(match.group(1))
+                print(f"✅ Found {len(jobs_data)} jobs on {site['name']}")
+                for job in jobs_data:
+                    title = job["title"]
+                    link = site["base_url"] + job["url"]
+                    if not job_seen(link) and any(k in title.lower() for k in site["keywords"]):
+                        send_to_discord(f"📢 **{title}**\n🔗 {link}")
+                        mark_job_seen(link)
+                        found_jobs += 1
+            else:
+                print(f"❌ Could not extract job data from JavaScript for {site['name']}")
+            continue  # Skip remaining parsing for this site
+
+        # === Regular Handling ===
         soup = BeautifulSoup(res.text, "html.parser")
         listings = soup.select(site["selector"])
         print(f"✅ Found {len(listings)} elements using selector: {site['selector']}")
 
         for job in listings:
-            # === ChurchStaffing special case ===
+            # === ChurchStaffing Special Case ===
             if site["name"].startswith("ChurchStaffing"):
                 title_elem = job.find("span", class_="searchResultTitle")
                 if not title_elem:
@@ -61,7 +81,7 @@ for site in config:
                 href = job.get("href", "")
                 full_link = href if href.startswith("http") else site["base_url"] + href
 
-            # === ChristianTechJobs special case ===
+            # === ChristianTechJobs Special Case ===
             elif site["name"].startswith("Christian Tech Jobs"):
                 text_raw = job.text.strip()
                 text = " ".join(text_raw.split())
@@ -69,7 +89,7 @@ for site in config:
                 href = link_elem.get("href", "") if link_elem else ""
                 full_link = href if href.startswith("http") else site["base_url"] + href
 
-            # === General case (Rock RMS, Lakepointe, etc.) ===
+            # === General Case ===
             else:
                 text_raw = job.text.strip()
                 text = " ".join(text_raw.split())
@@ -79,7 +99,6 @@ for site in config:
                     href = link_elem.get("href", "") if link_elem else ""
                 full_link = href if href.startswith("http") else site["base_url"] + href
 
-            # Keyword filtering
             if not job_seen(full_link) and any(k in text.lower() for k in site["keywords"]):
                 send_to_discord(f"📢 **{text}**\n🔗 {full_link}")
                 mark_job_seen(full_link)
