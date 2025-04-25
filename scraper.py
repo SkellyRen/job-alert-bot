@@ -3,13 +3,14 @@ import requests
 from bs4 import BeautifulSoup
 import hashlib
 import os
+import time
 
 # Load config
 with open("config.json", "r") as f:
     config = json.load(f)
 
 # Your actual Discord webhook
-DISCORD_WEBHOOK = "https://discord.com/api/webhooks/your-webhook-url"  # Replace this
+DISCORD_WEBHOOK = "https://discord.com/api/webhooks/1365118003976601681/PJi6J7GBkbBwotBi_OkKT9UrChdylnfIsfWQ28hW0XMExbxT-Pmkt7a9dQk5RQXc2n8M"
 
 SEEN_FILE = "seen_jobs.txt"
 HEADERS = {"User-Agent": "Mozilla/5.0 (compatible; JobBot/1.0)"}
@@ -35,6 +36,7 @@ def send_to_discord(message):
     print("Posting to Discord:", message)
     try:
         requests.post(DISCORD_WEBHOOK, json={"content": message})
+        time.sleep(1.2)  # Rate limit protection
     except Exception as e:
         print("❌ Failed to send to Discord:", e)
 
@@ -67,7 +69,7 @@ for site in config:
                 href = link_elem.get("href", "") if link_elem else ""
                 full_link = href if href.startswith("http") else site["base_url"] + href
 
-            # === General case (Rock RMS, etc.) ===
+            # === General case (Rock RMS, Lakepointe, etc.) ===
             else:
                 text_raw = job.text.strip()
                 text = " ".join(text_raw.split())
