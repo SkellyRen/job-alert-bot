@@ -24,7 +24,7 @@
         "name": "Lakepointe Church",
         "url": "https://lakepointe.church/careers/",
         "base_url": "https://lakepointe.church",
-        "selector": ".job-title a",
+        "selector": ".job-item-title",
         "keywords": ["it", "developer", "rock rms", "systems","software engineer"]
     }
 ]
