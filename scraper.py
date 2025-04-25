@@ -8,13 +8,14 @@ import os
 with open("config.json", "r") as f:
     config = json.load(f)
 
-# Your Discord webhook
-DISCORD_WEBHOOK = "https://discord.com/api/webhooks/1365118003976601681/PJi6J7GBkbBwotBi_OkKT9UrChdylnfIsfWQ28hW0XMExbxT-Pmkt7a9dQk5RQXc2n8M"
+# Discord webhook URL
+DISCORD_WEBHOOK = "https://discord.com/api/webhooks/your-webhook-url"  # ← Replace with your actual webhook
 
+# File to store seen job hashes
 SEEN_FILE = "seen_jobs.txt"
-HEADERS = {'User-Agent': 'Mozilla/5.0 (compatible; JobBot/1.0)'}
+HEADERS = {"User-Agent": "Mozilla/5.0 (compatible; JobBot/1.0)"}
 
-# Load seen job hashes
+# Load seen jobs
 if os.path.exists(SEEN_FILE):
     with open(SEEN_FILE, "r") as f:
         seen = set(f.read().splitlines())
@@ -33,11 +34,14 @@ def mark_job_seen(url):
 
 def send_to_discord(message):
     print("Posting to Discord:", message)
-    requests.post(DISCORD_WEBHOOK, json={"content": message})
+    try:
+        requests.post(DISCORD_WEBHOOK, json={"content": message})
+    except Exception as e:
+        print("❌ Failed to send message to Discord:", e)
 
-found_jobs = 0  # Track matches for fallback message
+found_jobs = 0  # Counter to track if any jobs matched
 
-# Scrape and match
+# Loop through all configured job boards
 for site in config:
     print(f"Checking {site['name']}...")
     try:
@@ -45,29 +49,32 @@ for site in config:
         res.raise_for_status()
         soup = BeautifulSoup(res.text, "html.parser")
         listings = soup.select(site["selector"])
-        print(f"Found {len(listings)} elements using selector: {site['selector']}")
+        print(f"✅ Found {len(listings)} elements using selector: {site['selector']}")
 
         for job in listings:
             text = job.text.strip().lower()
 
-            # Attempt to find a link associated with the job
-            href = ""
-            link_elem = job.find("a")
-            if not link_elem:
-                link_elem = job.find_next("a")
-            if link_elem:
-                href = link_elem.get("href", "")
+            # Special logic: if job is a <span> inside an <a> (ChristianTechJobs)
+            if job.name == "span" and job.parent.name == "a":
+                href = job.parent.get("href", "")
+            else:
+                href = job.get("href", "") if job.name == "a" else ""
+                if not href:
+                    # Try finding a nearby <a> if not in the same tag
+                    link_elem = job.find("a") or job.find_parent("a")
+                    href = link_elem.get("href", "") if link_elem else ""
 
             full_link = href if href.startswith("http") else site["base_url"] + href
 
-            if not job_seen(full_link) and any(keyword in text for keyword in site["keywords"]):
+            # Check if job is new and keyword matches
+            if not job_seen(full_link) and any(k in text for k in site["keywords"]):
                 send_to_discord(f"📢 **{text}**\n🔗 {full_link}")
                 mark_job_seen(full_link)
                 found_jobs += 1
 
     except Exception as e:
-        print(f"Error checking {site['name']}: {e}")
+        print(f"❌ Error checking {site['name']}: {e}")
 
-# Let user know script ran even if nothing matched
+# Fallback message
 if found_jobs == 0:
     send_to_discord("✅ Job check completed. No new matching jobs found.")
