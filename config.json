@@ -21,10 +21,24 @@
     "keywords": ["rock", "developer", "admin", "rms"]
   },
   {
-    "name": "Lakepointe Church",
-    "url": "https://lakepointe.church/careers/",
-    "base_url": "https://lakepointe.church/careers/",
-    "selector": "a[href*='#op-']",
-    "keywords": ["it", "developer", "rock rms", "systems", "software engineer"]
+    "name": "Life.Church Careers",
+    "url": "https://www.life.church/careers/find-a-role/",
+    "base_url": "",
+    "selector": "a.job-item",
+    "keywords": ["crm", "rock rms", "product engineer"]
+  },
+  {
+    "name": "The Village Church",
+    "url": "https://www.thevillagechurch.net/jobs-residencies",
+    "base_url": "https://www.thevillagechurch.net",
+    "selector": "div.card-footer a.btn",
+    "keywords": ["crm", "rock", "it", "systems", "technology","database","data"]
+  },
+  {
+    "name": "Milestone Church (Paycom)",
+    "url": "https://www.paycomonline.net/v4/ats/web.php/jobs?clientkey=1B0F623F503CE910C926B3B77EE8B5A6",
+    "base_url": "https://www.paycomonline.net",
+    "selector": "",  // not used due to custom parsing
+    "keywords": ["crm", "rock", "it", "systems", "technology", "database", "data", "software"]
   }
 ]
