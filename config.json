@@ -17,14 +17,14 @@
     "name": "Rock RMS Community Jobs",
     "url": "https://community.rockrms.com/jobs",
     "base_url": "https://community.rockrms.com",
-    "selector": "a.stretched-link",  //
+    "selector": "a.stretched-link",
     "keywords": ["rock", "developer", "admin", "rms"]
   },
   {
     "name": "Lakepointe Church",
     "url": "https://lakepointe.church/careers/",
     "base_url": "",
-    "selector": "a.rbox-opening-li-title",  // fixed typo
+    "selector": "a.rbox-opening-li-title",
     "keywords": ["it", "developer", "rock rms", "systems", "software engineer"]
   }
 ]
