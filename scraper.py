@@ -45,6 +45,7 @@ for site in config:
         res.raise_for_status()
         soup = BeautifulSoup(res.text, "html.parser")
         listings = soup.select(site["selector"])
+        print(f"Found {len(listings)} elements using selector: {site['selector']}")
 
         for job in listings:
             text = job.text.strip().lower()
