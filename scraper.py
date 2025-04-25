@@ -10,7 +10,7 @@ with open("config.json", "r") as f:
     config = json.load(f)
 
 # Your actual Discord webhook
-DISCORD_WEBHOOK = "https://discord.com/api/webhooks/1365118003976601681/PJi6J7GBkbBwotBi_OkKT9UrChdylnfIsfWQ28hW0XMExbxT-Pmkt7a9dQk5RQXc2n8M"
+DISCORD_WEBHOOK = os.getenv("DISCORD_WEBHOOK")
 
 SEEN_FILE = "seen_jobs.txt"
 HEADERS = {"User-Agent": "Mozilla/5.0 (compatible; JobBot/1.0)"}
