@@ -48,7 +48,15 @@ for site in config:
 
         for job in listings:
             text = job.text.strip().lower()
-            href = job.get("href", "")
+
+            # Attempt to find a link associated with the job
+            href = ""
+            link_elem = job.find("a")
+            if not link_elem:
+                link_elem = job.find_next("a")
+            if link_elem:
+                href = link_elem.get("href", "")
+
             full_link = href if href.startswith("http") else site["base_url"] + href
 
             if not job_seen(full_link) and any(keyword in text for keyword in site["keywords"]):
