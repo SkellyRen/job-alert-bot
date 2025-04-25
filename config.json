@@ -10,7 +10,7 @@
     "name": "ChurchStaffing (Tech)",
     "url": "https://www.churchstaffing.com/jobs/category/it-technology/",
     "base_url": "https://www.churchstaffing.com",
-    "selector": "a[href*='/job/']", 
+    "selector": "a[href*='/job/']",
     "keywords": ["developer", "technology", "it", "support", "software engineer"]
   },
   {
@@ -23,8 +23,8 @@
   {
     "name": "Lakepointe Church",
     "url": "https://lakepointe.church/careers/",
-    "base_url": "",
-    "selector": "a.rbox-opening-li-title",
+    "base_url": "https://lakepointe.church",
+    "selector": "a[href*='#op-']",
     "keywords": ["it", "developer", "rock rms", "systems", "software engineer"]
   }
 ]
