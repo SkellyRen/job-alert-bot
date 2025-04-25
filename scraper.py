@@ -8,10 +8,9 @@ import os
 with open("config.json", "r") as f:
     config = json.load(f)
 
-# Discord webhook URL
-DISCORD_WEBHOOK = "https://discord.com/api/webhooks/your-webhook-url"  # ← Replace with your actual webhook
+# Your actual Discord webhook
+DISCORD_WEBHOOK = "https://discord.com/api/webhooks/your-webhook-url"  # Replace this
 
-# File to store seen job hashes
 SEEN_FILE = "seen_jobs.txt"
 HEADERS = {"User-Agent": "Mozilla/5.0 (compatible; JobBot/1.0)"}
 
@@ -37,11 +36,10 @@ def send_to_discord(message):
     try:
         requests.post(DISCORD_WEBHOOK, json={"content": message})
     except Exception as e:
-        print("❌ Failed to send message to Discord:", e)
+        print("❌ Failed to send to Discord:", e)
 
-found_jobs = 0  # Counter to track if any jobs matched
+found_jobs = 0
 
-# Loop through all configured job boards
 for site in config:
     print(f"Checking {site['name']}...")
     try:
@@ -52,22 +50,35 @@ for site in config:
         print(f"✅ Found {len(listings)} elements using selector: {site['selector']}")
 
         for job in listings:
-            text = job.text.strip().lower()
+            # === ChurchStaffing special case ===
+            if site["name"].startswith("ChurchStaffing"):
+                title_elem = job.find("span", class_="searchResultTitle")
+                if not title_elem:
+                    continue
+                text = " ".join(title_elem.get_text(strip=True).split())
+                href = job.get("href", "")
+                full_link = href if href.startswith("http") else site["base_url"] + href
 
-            # Special logic: if job is a <span> inside an <a> (ChristianTechJobs)
-            if job.name == "span" and job.parent.name == "a":
-                href = job.parent.get("href", "")
+            # === ChristianTechJobs special case ===
+            elif site["name"].startswith("Christian Tech Jobs"):
+                text_raw = job.text.strip()
+                text = " ".join(text_raw.split())
+                link_elem = job.find_parent("a")
+                href = link_elem.get("href", "") if link_elem else ""
+                full_link = href if href.startswith("http") else site["base_url"] + href
+
+            # === General case (Rock RMS, etc.) ===
             else:
-                href = job.get("href", "") if job.name == "a" else ""
+                text_raw = job.text.strip()
+                text = " ".join(text_raw.split())
+                href = job.get("href", "")
                 if not href:
-                    # Try finding a nearby <a> if not in the same tag
                     link_elem = job.find("a") or job.find_parent("a")
                     href = link_elem.get("href", "") if link_elem else ""
+                full_link = href if href.startswith("http") else site["base_url"] + href
 
-            full_link = href if href.startswith("http") else site["base_url"] + href
-
-            # Check if job is new and keyword matches
-            if not job_seen(full_link) and any(k in text for k in site["keywords"]):
+            # Keyword filtering
+            if not job_seen(full_link) and any(k in text.lower() for k in site["keywords"]):
                 send_to_discord(f"📢 **{text}**\n🔗 {full_link}")
                 mark_job_seen(full_link)
                 found_jobs += 1
@@ -75,6 +86,5 @@ for site in config:
     except Exception as e:
         print(f"❌ Error checking {site['name']}: {e}")
 
-# Fallback message
 if found_jobs == 0:
     send_to_discord("✅ Job check completed. No new matching jobs found.")
