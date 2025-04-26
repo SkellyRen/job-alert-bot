@@ -4,14 +4,14 @@
     "url": "https://www.christiantechjobs.io",
     "base_url": "https://www.christiantechjobs.io",
     "selector": "span.text-slate-800",
-    "keywords": ["developer", "crm", "data", "migration", "rock rms", "remote", "software engineer","software","solutions"]
+    "keywords": ["developer", "crm", "data", "migration", "rock rms", "remote", "software engineer","software","solutions", "database"]
   },
   {
     "name": "ChurchStaffing (Tech)",
     "url": "https://www.churchstaffing.com/jobs/category/it-technology/",
     "base_url": "https://www.churchstaffing.com",
     "selector": "a[href*='/job/']",
-    "keywords": ["developer", "technology", "it", "support", "software engineer"]
+    "keywords": ["developer", "technology", "it", "support", "software engineer", "data", "database", "rock", "chms", "crm"]
   },
   {
     "name": "Rock RMS Community Jobs",
