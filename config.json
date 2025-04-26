@@ -40,5 +40,12 @@
     "base_url": "https://www.paycomonline.net",
     "selector": "",
     "keywords": ["crm", "rock", "it", "systems", "technology", "database", "data", "software"]
+  },
+  {
+    "name": "Family First",
+    "url": "https://familyfirst.net/about/jobs-internships/",
+    "base_url": "https://familyfirst.net",
+    "selector": "li.job-intern-listing a",
+    "keywords": ["crm", "it", "systems", "technology", "database", "data", "software"]
   }
 ]
