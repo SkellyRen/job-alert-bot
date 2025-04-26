@@ -47,5 +47,12 @@
     "base_url": "https://familyfirst.net",
     "selector": "li.job-intern-listing a",
     "keywords": ["crm", "it", "systems", "technology", "database", "data", "software"]
+  },
+  {
+    "name": "Keystone Church",
+    "url": "https://keystonechurch.com/jobs/",
+    "base_url": "https://keystonechurch.com",
+    "selector": "h2.awsm-job-post-title a",
+    "keywords": ["crm", "rock", "it", "systems", "technology", "database", "data", "software"]
   }
 ]
