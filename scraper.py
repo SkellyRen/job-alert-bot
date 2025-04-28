@@ -50,7 +50,7 @@ for site in config:
             res = requests.get(site["url"], headers=HEADERS, timeout=10)
             res.raise_for_status()
             data = res.json()
-            jobs = data.get("jobPostings", [])
+            jobs = data.get("jobBoard", {}).get("jobPostings", [])
             print(f"✅ Found {len(jobs)} job listings via API")
 
             for job in jobs:
