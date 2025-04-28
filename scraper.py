@@ -44,33 +44,65 @@ found_jobs = 0
 
 for site in config:
     print(f"Checking {site['name']}...")
-
     try:
-        if site.get("api_mode", False):
-            # API-based site (e.g., Virtuous Careers)
+        if site.get("api_mode"):
+            # API mode (Virtuous)
             res = requests.get(site["url"], headers=HEADERS, timeout=10)
             res.raise_for_status()
             data = res.json()
-            jobs = data.get("jobs", [])
-            print(f"✅ Found {len(jobs)} job listings via API\n")
+            jobs = data.get("jobPostings", [])
+            print(f"✅ Found {len(jobs)} job listings via API")
 
             for job in jobs:
-                title = job.get("title", "").strip()
-                job_id = job.get("jobId", "")
-                link = f"{site['base_url']}/jobs/{job_id}" if job_id else site["base_url"]
+                title = job.get("title", "")
+                full_link = f"{site['base_url']}/jobs/{job.get('id', '')}"
+                text = f"{title}"
 
-                if title and not job_seen(link) and any(k in title.lower() for k in site["keywords"]):
-                    send_to_discord(f"📢 **{title}**\n🔗 {link}")
-                    mark_job_seen(link)
+                if not job_seen(full_link) and any(k in text.lower() for k in site["keywords"]):
+                    send_to_discord(f"📢 **{title}**\n🔗 {full_link}")
+                    mark_job_seen(full_link)
+                    found_jobs += 1
+
+        elif site["name"].startswith("Milestone Church"):
+            # Special Milestone parsing
+            res = requests.get(site["url"], headers=HEADERS, timeout=10)
+            res.raise_for_status()
+            soup = BeautifulSoup(res.text, "html.parser")
+            scripts = soup.find_all("script")
+            jobs_data = []
+            for script in scripts:
+                if "var jobs = " in script.text:
+                    js_text = script.text
+                    start = js_text.find("var jobs = ") + len("var jobs = ")
+                    end = js_text.find("];", start) + 1
+                    jobs_json = js_text[start:end]
+                    try:
+                        jobs_data = json.loads(jobs_json)
+                    except Exception as e:
+                        print("❌ Error parsing Milestone job JSON:", e)
+                    break
+
+            listings = jobs_data
+            print(f"✅ Found {len(listings)} job listings via embedded JSON")
+
+            for job in listings:
+                title = job["title"]
+                full_link = site["base_url"] + job["url"]
+                description = job.get("description", "")
+
+                text = f"{title} {description}"
+                if not job_seen(full_link) and any(k in text.lower() for k in site["keywords"]):
+                    send_to_discord(f"📢 **{title}**\n🔗 {full_link}")
+                    mark_job_seen(full_link)
                     found_jobs += 1
 
         else:
-            # HTML scraping site
+            # Normal HTML scraping
             res = requests.get(site["url"], headers=HEADERS, timeout=10)
             res.raise_for_status()
             soup = BeautifulSoup(res.text, "html.parser")
             listings = soup.select(site["selector"])
-            print(f"✅ Found {len(listings)} elements using selector: {site['selector']}\n")
+            print(f"✅ Found {len(listings)} elements using selector: {site['selector']}")
 
             for job in listings:
                 text_raw = job.text.strip()
@@ -81,7 +113,7 @@ for site in config:
                     href = link_elem.get("href", "") if link_elem else ""
                 full_link = href if href.startswith("http") else site["base_url"] + href
 
-                if text and not job_seen(full_link) and any(k in text.lower() for k in site["keywords"]):
+                if not job_seen(full_link) and any(k in text.lower() for k in site["keywords"]):
                     send_to_discord(f"📢 **{text}**\n🔗 {full_link}")
                     mark_job_seen(full_link)
                     found_jobs += 1
