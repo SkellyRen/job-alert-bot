@@ -54,5 +54,13 @@
     "base_url": "https://keystonechurch.com",
     "selector": "h2.awsm-job-post-title a",
     "keywords": ["crm", "rock", "it", "systems", "technology", "database", "data", "software"]
+  },
+  {
+    "name": "Virtuous Careers",
+    "url": "https://api.ashbyhq.com/posting-api/job-board/virtuous?includeCompensation=true",
+    "base_url": "https://virtuous.jobs.personally.team",
+    "selector": "", 
+    "keywords": ["solutions", "crm", "database", "software", "technology", "systems","engineer"],
+    "api_mode": true
   }
 ]
