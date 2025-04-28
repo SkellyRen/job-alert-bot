@@ -38,7 +38,7 @@
     "name": "Milestone Church (Paycom)",
     "url": "https://www.paycomonline.net/v4/ats/web.php/jobs?clientkey=1B0F623F503CE910C926B3B77EE8B5A6",
     "base_url": "https://www.paycomonline.net",
-    "selector": "",
+    "selector": "li.JobListing__left a"
     "keywords": ["crm", "rock", "it", "systems", "technology", "database", "data", "software"]
   },
   {
