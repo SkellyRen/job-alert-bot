@@ -10,7 +10,6 @@ with open("config.json", "r") as f:
     config = json.load(f)
 
 DISCORD_WEBHOOK = os.getenv("DISCORD_WEBHOOK")
-
 SEEN_FILE = "seen_jobs.txt"
 HEADERS = {"User-Agent": "Mozilla/5.0 (compatible; JobBot/1.0)"}
 
@@ -35,7 +34,7 @@ def send_to_discord(message):
     print("Posting to Discord:", message)
     try:
         requests.post(DISCORD_WEBHOOK, json={"content": message})
-        time.sleep(1.2)
+        time.sleep(1.2)  # Discord rate limit protection
     except Exception as e:
         print("❌ Failed to send to Discord:", e)
 
@@ -43,27 +42,27 @@ found_jobs = 0
 
 for site in config:
     print(f"Checking {site['name']}...")
-
     try:
+        # API mode (for Virtuous)
         if site.get("api_mode"):
             res = requests.get(site["url"], headers=HEADERS, timeout=10)
+            res.raise_for_status()
             data = res.json()
-            jobs = data.get("jobPostings", [])
-            print(f"✅ Found {len(jobs)} job listings via API\n")
+            jobs = data.get("jobs", [])
+            print(f"✅ Found {len(jobs)} job listings via API")
 
             for job in jobs:
-                title = job.get("title", "")
-                job_id = job.get("id", "")
-                href = f"{site['base_url']}/job/{job_id}"
-
-                if not title:
+                title = job.get("title", "").strip()
+                full_link = job.get("jobUrl", "").strip()
+                if not title or not full_link:
                     continue
 
-                if not job_seen(href) and any(k in title.lower() for k in site["keywords"]):
-                    send_to_discord(f"📢 **{title}**\n🔗 {href}")
-                    mark_job_seen(href)
+                if not job_seen(full_link) and any(k in title.lower() for k in site["keywords"]):
+                    send_to_discord(f"📢 **{title}**\n🔗 {full_link}")
+                    mark_job_seen(full_link)
                     found_jobs += 1
 
+        # Regular scraping mode
         else:
             res = requests.get(site["url"], headers=HEADERS, timeout=10)
             res.raise_for_status()
