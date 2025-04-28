@@ -9,7 +9,6 @@ import time
 with open("config.json", "r") as f:
     config = json.load(f)
 
-# Your actual Discord webhook
 DISCORD_WEBHOOK = os.getenv("DISCORD_WEBHOOK")
 
 SEEN_FILE = "seen_jobs.txt"
@@ -36,7 +35,7 @@ def send_to_discord(message):
     print("Posting to Discord:", message)
     try:
         requests.post(DISCORD_WEBHOOK, json={"content": message})
-        time.sleep(1.2)  # Rate limit protection
+        time.sleep(1.2)
     except Exception as e:
         print("❌ Failed to send to Discord:", e)
 
@@ -44,60 +43,28 @@ found_jobs = 0
 
 for site in config:
     print(f"Checking {site['name']}...")
+
     try:
         if site.get("api_mode"):
-            # API mode (Virtuous)
             res = requests.get(site["url"], headers=HEADERS, timeout=10)
-            res.raise_for_status()
             data = res.json()
-            jobs = data.get("jobBoard", {}).get("jobPostings", [])
-            print(f"✅ Found {len(jobs)} job listings via API")
+            jobs = data.get("jobPostings", [])
+            print(f"✅ Found {len(jobs)} job listings via API\n")
 
             for job in jobs:
                 title = job.get("title", "")
-                full_link = f"{site['base_url']}/jobs/{job.get('id', '')}"
-                text = f"{title}"
+                job_id = job.get("id", "")
+                href = f"{site['base_url']}/job/{job_id}"
 
-                if not job_seen(full_link) and any(k in text.lower() for k in site["keywords"]):
-                    send_to_discord(f"📢 **{title}**\n🔗 {full_link}")
-                    mark_job_seen(full_link)
-                    found_jobs += 1
+                if not title:
+                    continue
 
-        elif site["name"].startswith("Milestone Church"):
-            # Special Milestone parsing
-            res = requests.get(site["url"], headers=HEADERS, timeout=10)
-            res.raise_for_status()
-            soup = BeautifulSoup(res.text, "html.parser")
-            scripts = soup.find_all("script")
-            jobs_data = []
-            for script in scripts:
-                if "var jobs = " in script.text:
-                    js_text = script.text
-                    start = js_text.find("var jobs = ") + len("var jobs = ")
-                    end = js_text.find("];", start) + 1
-                    jobs_json = js_text[start:end]
-                    try:
-                        jobs_data = json.loads(jobs_json)
-                    except Exception as e:
-                        print("❌ Error parsing Milestone job JSON:", e)
-                    break
-
-            listings = jobs_data
-            print(f"✅ Found {len(listings)} job listings via embedded JSON")
-
-            for job in listings:
-                title = job["title"]
-                full_link = site["base_url"] + job["url"]
-                description = job.get("description", "")
-
-                text = f"{title} {description}"
-                if not job_seen(full_link) and any(k in text.lower() for k in site["keywords"]):
-                    send_to_discord(f"📢 **{title}**\n🔗 {full_link}")
-                    mark_job_seen(full_link)
+                if not job_seen(href) and any(k in title.lower() for k in site["keywords"]):
+                    send_to_discord(f"📢 **{title}**\n🔗 {href}")
+                    mark_job_seen(href)
                     found_jobs += 1
 
         else:
-            # Normal HTML scraping
             res = requests.get(site["url"], headers=HEADERS, timeout=10)
             res.raise_for_status()
             soup = BeautifulSoup(res.text, "html.parser")
